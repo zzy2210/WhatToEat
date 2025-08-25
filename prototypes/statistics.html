@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatToEat - 统计分析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* 头部区域 */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .app-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 统计卡片基础样式 */
+        .stats-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* 概览统计 */
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: #00b894;
+        }
+
+        .stat-change.negative {
+            color: #e17055;
+        }
+
+        /* 图表区域 */
+        .chart-container {
+            height: 250px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 模拟图表数据 */
+        .mock-chart {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            padding: 1rem;
+        }
+
+        .chart-bar {
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            margin: 0 2px;
+            min-width: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .chart-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        /* 排行榜样式 */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .ranking-item:hover {
+            background: rgba(240, 242, 247, 0.9);
+            transform: translateX(4px);
+        }
+
+        .rank-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-right: 1rem;
+            color: white;
+        }
+
+        .rank-number.first {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .rank-number.second {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+
+        .rank-number.third {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+        }
+
+        .rank-number.other {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .food-info {
+            flex: 1;
+        }
+
+        .food-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .food-stats {
+            font-size: 0.8rem;
+            color: #666;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .progress-bar {
+            width: 60px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-left: 1rem;
+            align-self: center;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* 时间过滤器 */
+        .time-filter {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            background: white;
+            color: #666;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .filter-btn:hover:not(.active) {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* 权重分析 */
+        .weight-analysis {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .weight-category {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .weight-category.positive {
+            border-left: 4px solid #00b894;
+        }
+
+        .weight-category.negative {
+            border-left: 4px solid #e17055;
+        }
+
+        .weight-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .weight-number.positive {
+            color: #00b894;
+        }
+
+        .weight-number.negative {
+            color: #e17055;
+        }
+
+        .weight-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* 使用习惯分析 */
+        .habit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .habit-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .habit-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .habit-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .habit-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.25rem;
+        }
+
+        .habit-desc {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* 趋势分析 */
+        .trend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .trend-item:last-child {
+            border-bottom: none;
+        }
+
+        .trend-label {
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .trend-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .trend-arrow {
+            font-size: 0.7rem;
+        }
+
+        .trend-arrow.up {
+            color: #00b894;
+        }
+
+        .trend-arrow.down {
+            color: #e17055;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem 0.75rem;
+                gap: 1rem;
+            }
+
+            .overview-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .weight-analysis {
+                grid-template-columns: 1fr;
+            }
+
+            .habit-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .food-stats {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .time-filter {
+                justify-content: center;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-card {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .stats-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .stats-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .stats-card:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部区域 -->
+    <header class="header">
+        <div class="app-title">📊 WhatToEat 统计</div>
+        <div class="app-subtitle">数据驱动的美食选择</div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 概览统计 -->
+        <div class="stats-card">
+            <div class="card-title">📈 数据概览</div>
+            <div class="overview-stats">
+                <div class="stat-item">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">总推荐次数</div>
+                    <div class="stat-change positive">+12% 本周</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">食物总数</div>
+                    <div class="stat-change positive">+2 本月</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">已启用</div>
+                    <div class="stat-change">66.7% 占比</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">连续使用天数</div>
+                    <div class="stat-change positive">新纪录!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 推荐趋势图 -->
+        <div class="stats-card">
+            <div class="card-title">📊 推荐趋势</div>
+            <div class="time-filter">
+                <button class="filter-btn">今天</button>
+                <button class="filter-btn active">本周</button>
+                <button class="filter-btn">本月</button>
+                <button class="filter-btn">全部</button>
+            </div>
+            <div class="chart-container">
+                <div class="mock-chart">
+                    <div class="chart-bar" style="height: 60%;">
+                        <div class="chart-label">周一</div>
+                    </div>
+                    <div class="chart-bar" style="height: 80%;">
+                        <div class="chart-label">周二</div>
+                    </div>
+                    <div class="chart-bar" style="height: 45%;">
+                        <div class="chart-label">周三</div>
+                    </div>
+                    <div class="chart-bar" style="height: 90%;">
+                        <div class="chart-label">周四</div>
+                    </div>
+                    <div class="chart-bar" style="height: 70%;">
+                        <div class="chart-label">周五</div>
+                    </div>
+                    <div class="chart-bar" style="height: 95%;">
+                        <div class="chart-label">周六</div>
+                    </div>
+                    <div class="chart-bar" style="height: 85%;">
+                        <div class="chart-label">周日</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 受欢迎度排行 -->
+        <div class="stats-card">
+            <div class="card-title">🏆 受欢迎度排行</div>
+            <div class="ranking-list">
+                <div class="ranking-item">
+                    <div class="rank-number first">1</div>
+                    <div class="food-info">
+                        <div class="food-name">川味火锅</div>
+                        <div class="food-stats">
+                            <span>被推荐 32 次</span>
+                            <span>选择率 78%</span>
+                            <span>平均权重 +12</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                </div>
+                
+                <div class="ranking-item">
+                    <div class="rank-number second">2</div>
+                    <div class="food-info">
+                        <div class="food-name">兰州拉面</div>
+                        <div class="food-stats">
+                            <span>被推荐 28 次</span>
+                            <span>选择率 71%</span>
+                            <span>平均权重 +13</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 87%;"></div>
+                    </div>
+                </div>
+                
+                <div class="ranking-item">
+                    <div class="rank-number third">3</div>
+                    <div class="food-info">
+                        <div class="food-name">黄焖鸡米饭</div>
+                        <div class="food-stats">
+                            <span>被推荐 25 次</span>
+                            <span>选择率 64%</span>
+                            <span>平均权重 +5</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 78%;"></div>
+                    </div>
+                </div>
+
+                <div class="ranking-item">
+                    <div class="rank-number other">4</div>
+                    <div class="food-info">
+                        <div class="food-name">沙县小吃</div>
+                        <div class="food-stats">
+                            <span>被推荐 18 次</span>
+                            <span>选择率 89%</span>
+                            <span>平均权重 +18</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 56%;"></div>
+                    </div>
+                </div>
+
+                <div class="ranking-item">
+                    <div class="rank-number other">5</div>
+                    <div class="food-info">
+                        <div class="food-name">重庆小面</div>
+                        <div class="food-stats">
+                            <span>被推荐 15 次</span>
+                            <span>选择率 60%</span>
+                            <span>平均权重 +5</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 47%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 权重分析 -->
+        <div class="stats-card">
+            <div class="card-title">⚖️ 权重分析</div>
+            <div class="weight-analysis">
+                <div class="weight-category positive">
+                    <div class="weight-number positive">+148</div>
+                    <div class="weight-label">正权重总和</div>
+                    <div class="habit-desc">18个标签</div>
+                </div>
+                <div class="weight-category negative">
+                    <div class="weight-number negative">-62</div>
+                    <div class="weight-label">负权重总和</div>
+                    <div class="habit-desc">12个标签</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 使用习惯分析 -->
+        <div class="stats-card">
+            <div class="card-title">🕐 使用习惯</div>
+            <div class="habit-grid">
+                <div class="habit-item">
+                    <div class="habit-icon">📅</div>
+                    <div class="habit-title">最活跃日期</div>
+                    <div class="habit-value">周六</div>
+                    <div class="habit-desc">平均 4.2 次推荐</div>
+                </div>
+                <div class="habit-item">
+                    <div class="habit-icon">🕐</div>
+                    <div class="habit-title">最活跃时段</div>
+                    <div class="habit-value">12:00</div>
+                    <div class="habit-desc">午餐时间最常用</div>
+                </div>
+                <div class="habit-item">
+                    <div class="habit-icon">🎯</div>
+                    <div class="habit-title">平均决策次数</div>
+                    <div class="habit-value">2.8次</div>
+                    <div class="habit-desc">找到满意选择</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 趋势分析 -->
+        <div class="stats-card">
+            <div class="card-title">📈 趋势分析</div>
+            <div class="trend-item">
+                <span class="trend-label">食物多样性</span>
+                <span class="trend-value">
+                    75% 
+                    <span class="trend-arrow up">↗</span>
+                </span>
+            </div>
+            <div class="trend-item">
+                <span class="trend-label">推荐准确率</span>
+                <span class="trend-value">
+                    68% 
+                    <span class="trend-arrow up">↗</span>
+                </span>
+            </div>
+            <div class="trend-item">
+                <span class="trend-label">权重优化度</span>
+                <span class="trend-value">
+                    82% 
+                    <span class="trend-arrow down">↘</span>
+                </span>
+            </div>
+            <div class="trend-item">
+                <span class="trend-label">使用频率</span>
+                <span class="trend-value">
+                    2.2次/天 
+                    <span class="trend-arrow up">↗</span>
+                </span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 时间过滤器切换
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 模拟数据更新
+                updateChartData(this.textContent);
+            });
+        });
+
+        // 模拟图表数据更新
+        function updateChartData(period) {
+            const bars = document.querySelectorAll('.chart-bar');
+            const heights = {
+                '今天': [30, 60, 40, 80, 50, 0, 0],
+                '本周': [60, 80, 45, 90, 70, 95, 85],
+                '本月': [75, 85, 60, 95, 80, 90, 88],
+                '全部': [90, 95, 85, 100, 88, 92, 96]
+            };
+            
+            const data = heights[period] || heights['本周'];
+            bars.forEach((bar, index) => {
+                if (data[index] !== undefined) {
+                    bar.style.height = data[index] + '%';
+                    bar.style.opacity = data[index] === 0 ? '0.3' : '1';
+                }
+            });
+        }
+
+        // 排行榜项目悬停效果
+        document.querySelectorAll('.ranking-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                const progressFill = this.querySelector('.progress-fill');
+                const currentWidth = parseFloat(progressFill.style.width);
+                progressFill.style.width = Math.min(currentWidth + 10, 100) + '%';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                const progressFill = this.querySelector('.progress-fill');
+                const originalWidths = ['100%', '87%', '78%', '56%', '47%'];
+                const index = Array.from(this.parentNode.children).indexOf(this);
+                progressFill.style.width = originalWidths[index] || '50%';
+            });
+        });
+
+        // 数据刷新动画
+        function refreshStats() {
+            const numbers = document.querySelectorAll('.stat-number, .weight-number, .habit-value');
+            numbers.forEach(num => {
+                num.style.transform = 'scale(1.1)';
+                num.style.color = '#667eea';
+                setTimeout(() => {
+                    num.style.transform = 'scale(1)';
+                    num.style.color = '';
+                }, 200);
+            });
+        }
+
+        // 每30秒模拟数据刷新
+        setInterval(refreshStats, 30000);
+
+        // 图表条形动画
+        document.querySelectorAll('.chart-bar').forEach((bar, index) => {
+            setTimeout(() => {
+                bar.style.opacity = '1';
+                bar.style.transform = 'scaleY(1)';
+            }, index * 100);
+        });
+
+        // 初始化图表条形动画
+        document.querySelectorAll('.chart-bar').forEach(bar => {
+            bar.style.opacity = '0';
+            bar.style.transform = 'scaleY(0)';
+            bar.style.transformOrigin = 'bottom';
+            bar.style.transition = 'all 0.5s ease';
+        });
+    </script>
+</body>
+</html>

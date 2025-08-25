@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatToEat - 完整界面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* 头部区域 */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .app-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 标签页内容 */
+        .tab-content {
+            flex: 1;
+            padding: 1.5rem 1rem;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* ==================== 推荐页面样式 ==================== */
+        .recommendation-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .recommendation-title {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-result {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation-tags {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .tag.positive {
+            background: #e8f5e8;
+            color: #2d5a2d;
+        }
+
+        .tag.negative {
+            background: #ffeaea;
+            color: #d63031;
+        }
+
+        .recommend-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .recommend-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-overview {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        /* ==================== 清单页面样式 ==================== */
+        .search-bar {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .food-list-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex: 1;
+        }
+
+        .food-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .food-list-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .food-count {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .food-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            background: rgba(248, 249, 250, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .food-item:hover {
+            background: rgba(240, 242, 247, 0.9);
+            transform: translateX(4px);
+        }
+
+        .food-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .food-info {
+            flex: 1;
+        }
+
+        .food-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .food-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .food-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-indicator.enabled {
+            background: #00b894;
+        }
+
+        .status-indicator.disabled {
+            background: #e17055;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-icon.edit {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .action-icon.delete {
+            background: rgba(225, 112, 85, 0.1);
+            color: #e17055;
+        }
+
+        .action-icon:hover {
+            transform: scale(1.1);
+        }
+
+
+        /* ==================== 统计页面样式 ==================== */
+        .stats-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .rank-list {
+            list-style: none;
+        }
+
+        .rank-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: rgba(248, 249, 250, 0.8);
+        }
+
+        .rank-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.75rem;
+        }
+
+        .rank-info {
+            flex: 1;
+        }
+
+        .rank-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .rank-count {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* 底部导航栏 */
+        .bottom-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            bottom: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: #666;
+            font-size: 0.8rem;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .nav-item:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0;
+            }
+
+            .tab-content {
+                padding: 1rem 0.75rem;
+                gap: 1rem;
+            }
+
+            .recommendation-card {
+                padding: 1.5rem;
+            }
+
+            .recommendation-result {
+                font-size: 1.75rem;
+            }
+
+            .food-item {
+                padding: 0.75rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .food-actions {
+                align-self: flex-end;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 浮动添加按钮 */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
+            transition: all 0.3s ease;
+            z-index: 50;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部区域 -->
+    <header class="header">
+        <div class="app-title">🍽️ WhatToEat</div>
+        <div class="app-subtitle">智能美食选择助手</div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 推荐页面 -->
+        <div class="tab-content active" id="recommend-tab">
+            <!-- 推荐结果卡片 -->
+            <div class="recommendation-card">
+                <div class="recommendation-title">🎲 为你推荐</div>
+                <div class="recommendation-result">黄焖鸡米饭</div>
+                <div class="recommendation-tags">
+                    <span class="tag positive">+10 味道不错</span>
+                    <span class="tag negative">-5 天天吃</span>
+                </div>
+                <button class="recommend-btn">🎯 再来一个</button>
+            </div>
+
+            <!-- 统计概览 -->
+            <div class="stats-overview">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">总食物数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">已启用</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">推荐次数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">7天</div>
+                        <div class="stat-label">使用时长</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 清单页面 -->
+        <div class="tab-content" id="list-tab">
+            <!-- 搜索栏 -->
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="🔍 搜索食物...">
+            </div>
+
+            <!-- 食物列表 -->
+            <div class="food-list-card">
+                <div class="food-list-header">
+                    <div class="food-list-title">🏷️ 我的美食清单</div>
+                    <div class="food-count">共 12 项</div>
+                </div>
+                
+                <div class="food-item">
+                    <div class="food-info">
+                        <div class="food-name">黄焖鸡米饭</div>
+                        <div class="food-tags">
+                            <span class="tag positive">+10 味道不错</span>
+                            <span class="tag negative">-5 天天吃</span>
+                        </div>
+                    </div>
+                    <div class="food-actions">
+                        <div class="status-toggle">
+                            <span class="status-indicator enabled"></span>
+                            <span>已启用</span>
+                        </div>
+                        <button class="action-icon edit">✏️</button>
+                        <button class="action-icon delete">🗑️</button>
+                    </div>
+                </div>
+
+                <div class="food-item">
+                    <div class="food-info">
+                        <div class="food-name">川味火锅</div>
+                        <div class="food-tags">
+                            <span class="tag positive">+15 超级好吃</span>
+                            <span class="tag negative">-3 有点贵</span>
+                        </div>
+                    </div>
+                    <div class="food-actions">
+                        <div class="status-toggle">
+                            <span class="status-indicator enabled"></span>
+                            <span>已启用</span>
+                        </div>
+                        <button class="action-icon edit">✏️</button>
+                        <button class="action-icon delete">🗑️</button>
+                    </div>
+                </div>
+
+                <div class="food-item">
+                    <div class="food-info">
+                        <div class="food-name">兰州拉面</div>
+                        <div class="food-tags">
+                            <span class="tag positive">+8 清淡爽口</span>
+                            <span class="tag positive">+5 价格合理</span>
+                        </div>
+                    </div>
+                    <div class="food-actions">
+                        <div class="status-toggle">
+                            <span class="status-indicator enabled"></span>
+                            <span>已启用</span>
+                        </div>
+                        <button class="action-icon edit">✏️</button>
+                        <button class="action-icon delete">🗑️</button>
+                    </div>
+                </div>
+
+                <div class="food-item">
+                    <div class="food-info">
+                        <div class="food-name">麦当劳</div>
+                        <div class="food-tags">
+                            <span class="tag positive">+5 方便快捷</span>
+                            <span class="tag negative">-8 不够健康</span>
+                        </div>
+                    </div>
+                    <div class="food-actions">
+                        <div class="status-toggle">
+                            <span class="status-indicator disabled"></span>
+                            <span>已禁用</span>
+                        </div>
+                        <button class="action-icon edit">✏️</button>
+                        <button class="action-icon delete">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计页面 -->
+        <div class="tab-content" id="stats-tab">
+            <div class="stats-card">
+                <div class="section-title">📊 推荐统计</div>
+                <div class="chart-placeholder">📈 推荐次数趋势图</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="section-title">🏆 最受欢迎排行</div>
+                <ul class="rank-list">
+                    <li class="rank-item">
+                        <div class="rank-number">1</div>
+                        <div class="rank-info">
+                            <div class="rank-name">川味火锅</div>
+                            <div class="rank-count">被推荐 32 次</div>
+                        </div>
+                    </li>
+                    <li class="rank-item">
+                        <div class="rank-number">2</div>
+                        <div class="rank-info">
+                            <div class="rank-name">兰州拉面</div>
+                            <div class="rank-count">被推荐 28 次</div>
+                        </div>
+                    </li>
+                    <li class="rank-item">
+                        <div class="rank-number">3</div>
+                        <div class="rank-info">
+                            <div class="rank-name">黄焖鸡米饭</div>
+                            <div class="rank-count">被推荐 25 次</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 浮动添加按钮 -->
+    <button class="fab" onclick="alert('添加新食物')">➕</button>
+
+    <!-- 底部导航栏 -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-tab="recommend-tab">
+            <div class="nav-icon">🎯</div>
+            <div>推荐</div>
+        </div>
+        <div class="nav-item" data-tab="list-tab">
+            <div class="nav-icon">📋</div>
+            <div>清单</div>
+        </div>
+        <div class="nav-item" data-tab="stats-tab">
+            <div class="nav-icon">📊</div>
+            <div>统计</div>
+        </div>
+    </nav>
+
+    <script>
+        // 模拟数据
+        const foods = [
+            { name: '黄焖鸡米饭', tags: [{text: '味道不错', weight: 10}, {text: '天天吃', weight: -5}], enabled: true },
+            { name: '川味火锅', tags: [{text: '超级好吃', weight: 15}, {text: '有点贵', weight: -3}], enabled: true },
+            { name: '兰州拉面', tags: [{text: '清淡爽口', weight: 8}, {text: '价格合理', weight: 5}], enabled: true },
+            { name: '沙县小吃', tags: [{text: '经济实惠', weight: 12}, {text: '营养均衡', weight: 6}], enabled: true },
+            { name: '重庆小面', tags: [{text: '香辣过瘾', weight: 9}, {text: '比较油腻', weight: -4}], enabled: true },
+            { name: '东北饺子', tags: [{text: '家的味道', weight: 11}, {text: '分量足', weight: 7}], enabled: true }
+        ];
+
+        // 标签页切换功能
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有活跃状态
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                
+                // 添加当前活跃状态
+                this.classList.add('active');
+                const targetTab = document.getElementById(this.dataset.tab);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                }
+            });
+        });
+
+        // 推荐功能
+        const recommendBtn = document.querySelector('.recommend-btn');
+        const recommendResult = document.querySelector('.recommendation-result');
+        const recommendTags = document.querySelector('.recommendation-tags');
+
+        if (recommendBtn) {
+            recommendBtn.addEventListener('click', function() {
+                const enabledFoods = foods.filter(food => food.enabled);
+                const randomFood = enabledFoods[Math.floor(Math.random() * enabledFoods.length)];
+                
+                // 更新推荐结果
+                recommendResult.textContent = randomFood.name;
+                
+                // 更新标签
+                recommendTags.innerHTML = '';
+                randomFood.tags.forEach(tag => {
+                    const tagEl = document.createElement('span');
+                    tagEl.className = `tag ${tag.weight > 0 ? 'positive' : 'negative'}`;
+                    tagEl.textContent = `${tag.weight > 0 ? '+' : ''}${tag.weight} ${tag.text}`;
+                    recommendTags.appendChild(tagEl);
+                });
+
+                // 按钮动画效果
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        }
+
+        // 状态切换功能
+        document.querySelectorAll('.status-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const indicator = this.querySelector('.status-indicator');
+                const text = this.querySelector('span:last-child');
+                
+                if (indicator.classList.contains('enabled')) {
+                    indicator.classList.remove('enabled');
+                    indicator.classList.add('disabled');
+                    text.textContent = '已禁用';
+                } else {
+                    indicator.classList.remove('disabled');
+                    indicator.classList.add('enabled');
+                    text.textContent = '已启用';
+                }
+            });
+        });
+
+
+        // 搜索功能
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                const foodItems = document.querySelectorAll('.food-item');
+                
+                foodItems.forEach(item => {
+                    const name = item.querySelector('.food-name').textContent.toLowerCase();
+                    if (name.includes(query)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // 操作按钮功能
+        document.querySelectorAll('.action-icon.edit').forEach(btn => {
+            btn.addEventListener('click', function() {
+                alert('编辑食物功能');
+            });
+        });
+
+        document.querySelectorAll('.action-icon.delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('确定要删除这个食物吗？')) {
+                    this.closest('.food-item').remove();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

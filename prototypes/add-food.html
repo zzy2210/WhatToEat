@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatToEat - 添加食物</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* 头部区域 */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+        }
+
+        .save-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .form-input.error {
+            border-color: #e17055;
+        }
+
+        /* 标签管理区域 */
+        .tags-section {
+            margin-top: 1rem;
+        }
+
+        .tags-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .add-tag-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-tag-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 标签输入区域 */
+        .tag-input-area {
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .tag-input-area.show {
+            display: block;
+        }
+
+        .tag-input-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+            margin-bottom: 0.75rem;
+        }
+
+        .tag-input-group {
+            flex: 1;
+        }
+
+        .tag-input-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .tag-name-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .weight-input-group {
+            width: 80px;
+        }
+
+        .weight-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+            outline: none;
+        }
+
+        .confirm-tag-btn {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .cancel-tag-btn {
+            background: #e17055;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        /* 标签列表 */
+        .tags-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .tag-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .tag-display {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .tag-preview {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .tag-preview.positive {
+            background: #e8f5e8;
+            color: #2d5a2d;
+        }
+
+        .tag-preview.negative {
+            background: #ffeaea;
+            color: #d63031;
+        }
+
+        .tag-weight {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .tag-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tag-action-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        .edit-tag-btn {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .delete-tag-btn {
+            background: rgba(225, 112, 85, 0.1);
+            color: #e17055;
+        }
+
+        .tag-action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* 空状态 */
+        .empty-tags {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-title {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .empty-desc {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        /* 预设标签 */
+        .preset-tags {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .preset-tags-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .preset-tags-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .preset-tag {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .preset-tag:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .preset-tag.positive {
+            border-color: #00b894;
+            color: #00b894;
+        }
+
+        .preset-tag.negative {
+            border-color: #e17055;
+            color: #e17055;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem 0.75rem;
+            }
+
+            .tag-input-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .weight-input-group {
+                width: 100%;
+            }
+
+            .preset-tags-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 表单验证 */
+        .error-message {
+            font-size: 0.8rem;
+            color: #e17055;
+            margin-top: 0.25rem;
+        }
+
+        .form-tips {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部区域 -->
+    <header class="header">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <div class="header-title">添加食物</div>
+        <button class="save-btn" id="save-btn" disabled>保存</button>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 基本信息表单 -->
+        <div class="form-card">
+            <div class="form-group">
+                <label class="form-label" for="food-name">食物名称 *</label>
+                <input type="text" class="form-input" id="food-name" placeholder="请输入食物或餐厅名称">
+                <div class="error-message" id="name-error" style="display: none;"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="food-desc">描述信息</label>
+                <input type="text" class="form-input" id="food-desc" placeholder="简单描述一下这个食物...">
+                <div class="form-tips">可选项，帮助你更好地记住这个食物</div>
+            </div>
+        </div>
+
+        <!-- 标签管理 -->
+        <div class="form-card">
+            <div class="tags-section">
+                <div class="tags-header">
+                    <div class="section-title">🏷️ 权重标签</div>
+                    <button class="add-tag-btn" id="add-tag-btn">➕ 添加标签</button>
+                </div>
+
+                <!-- 标签输入区域 -->
+                <div class="tag-input-area" id="tag-input-area">
+                    <div class="tag-input-row">
+                        <div class="tag-input-group">
+                            <label class="tag-input-label">标签名称</label>
+                            <input type="text" class="tag-name-input" id="tag-name" placeholder="例如：味道不错">
+                        </div>
+                        <div class="weight-input-group">
+                            <label class="tag-input-label">权重</label>
+                            <input type="number" class="weight-input" id="tag-weight" placeholder="±10" min="-99" max="99">
+                        </div>
+                        <button class="confirm-tag-btn" id="confirm-tag">✓</button>
+                        <button class="cancel-tag-btn" id="cancel-tag">✕</button>
+                    </div>
+                    <div class="form-tips">权重范围：-99 到 +99，正数增加选中概率，负数降低选中概率</div>
+                </div>
+
+                <!-- 标签列表 -->
+                <div class="tags-list" id="tags-list">
+                    <div class="empty-tags" id="empty-tags">
+                        <div class="empty-icon">🏷️</div>
+                        <div class="empty-title">暂无标签</div>
+                        <div class="empty-desc">添加标签来影响推荐权重</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预设标签 -->
+        <div class="preset-tags">
+            <div class="preset-tags-title">💡 常用标签</div>
+            <div class="preset-tags-grid">
+                <div class="preset-tag positive" data-name="味道不错" data-weight="10">味道不错 +10</div>
+                <div class="preset-tag positive" data-name="价格合理" data-weight="8">价格合理 +8</div>
+                <div class="preset-tag positive" data-name="分量足" data-weight="6">分量足 +6</div>
+                <div class="preset-tag positive" data-name="方便快捷" data-weight="5">方便快捷 +5</div>
+                <div class="preset-tag positive" data-name="营养健康" data-weight="12">营养健康 +12</div>
+                <div class="preset-tag positive" data-name="环境不错" data-weight="7">环境不错 +7</div>
+                <div class="preset-tag negative" data-name="有点贵" data-weight="-5">有点贵 -5</div>
+                <div class="preset-tag negative" data-name="太油腻" data-weight="-8">太油腻 -8</div>
+                <div class="preset-tag negative" data-name="经常吃" data-weight="-3">经常吃 -3</div>
+                <div class="preset-tag negative" data-name="排队久" data-weight="-4">排队久 -4</div>
+                <div class="preset-tag negative" data-name="不够健康" data-weight="-6">不够健康 -6</div>
+                <div class="preset-tag negative" data-name="距离远" data-weight="-2">距离远 -2</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 表单数据
+        let formData = {
+            name: '',
+            description: '',
+            tags: []
+        };
+
+        let editingIndex = -1; // 正在编辑的标签索引
+
+        // DOM 元素
+        const foodNameInput = document.getElementById('food-name');
+        const foodDescInput = document.getElementById('food-desc');
+        const saveBtn = document.getElementById('save-btn');
+        const addTagBtn = document.getElementById('add-tag-btn');
+        const tagInputArea = document.getElementById('tag-input-area');
+        const tagNameInput = document.getElementById('tag-name');
+        const tagWeightInput = document.getElementById('tag-weight');
+        const confirmTagBtn = document.getElementById('confirm-tag');
+        const cancelTagBtn = document.getElementById('cancel-tag');
+        const tagsList = document.getElementById('tags-list');
+        const emptyTags = document.getElementById('empty-tags');
+
+        // 表单验证
+        function validateForm() {
+            const name = foodNameInput.value.trim();
+            const isValid = name.length > 0;
+            
+            saveBtn.disabled = !isValid;
+            
+            if (name.length === 0) {
+                foodNameInput.classList.add('error');
+            } else {
+                foodNameInput.classList.remove('error');
+            }
+            
+            return isValid;
+        }
+
+        // 监听输入变化
+        foodNameInput.addEventListener('input', function() {
+            formData.name = this.value.trim();
+            validateForm();
+        });
+
+        foodDescInput.addEventListener('input', function() {
+            formData.description = this.value.trim();
+        });
+
+        // 标签管理
+        function showTagInput(editIndex = -1) {
+            editingIndex = editIndex;
+            tagInputArea.classList.add('show');
+            addTagBtn.style.display = 'none';
+            
+            if (editIndex >= 0) {
+                const tag = formData.tags[editIndex];
+                tagNameInput.value = tag.name;
+                tagWeightInput.value = tag.weight;
+            } else {
+                tagNameInput.value = '';
+                tagWeightInput.value = '';
+            }
+            
+            tagNameInput.focus();
+        }
+
+        function hideTagInput() {
+            editingIndex = -1;
+            tagInputArea.classList.remove('show');
+            addTagBtn.style.display = 'inline-block';
+            tagNameInput.value = '';
+            tagWeightInput.value = '';
+        }
+
+        function addOrUpdateTag() {
+            const name = tagNameInput.value.trim();
+            const weight = parseInt(tagWeightInput.value) || 0;
+            
+            if (!name) {
+                tagNameInput.focus();
+                return;
+            }
+            
+            // 检查重复标签名称（编辑时排除自己）
+            const existingIndex = formData.tags.findIndex((tag, index) => 
+                tag.name === name && index !== editingIndex
+            );
+            
+            if (existingIndex >= 0) {
+                alert('标签名称已存在');
+                tagNameInput.focus();
+                return;
+            }
+            
+            const tag = { name, weight };
+            
+            if (editingIndex >= 0) {
+                formData.tags[editingIndex] = tag;
+            } else {
+                formData.tags.push(tag);
+            }
+            
+            renderTags();
+            hideTagInput();
+        }
+
+        function deleteTag(index) {
+            if (confirm('确定要删除这个标签吗？')) {
+                formData.tags.splice(index, 1);
+                renderTags();
+            }
+        }
+
+        function renderTags() {
+            if (formData.tags.length === 0) {
+                emptyTags.style.display = 'block';
+                return;
+            }
+            
+            emptyTags.style.display = 'none';
+            
+            const tagsHTML = formData.tags.map((tag, index) => `
+                <div class="tag-item">
+                    <div class="tag-display">
+                        <span class="tag-preview ${tag.weight >= 0 ? 'positive' : 'negative'}">
+                            ${tag.weight >= 0 ? '+' : ''}${tag.weight} ${tag.name}
+                        </span>
+                        <span class="tag-weight">权重: ${tag.weight}</span>
+                    </div>
+                    <div class="tag-actions">
+                        <button class="tag-action-btn edit-tag-btn" onclick="showTagInput(${index})">✏️</button>
+                        <button class="tag-action-btn delete-tag-btn" onclick="deleteTag(${index})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            tagsList.innerHTML = tagsHTML;
+        }
+
+        // 事件监听
+        addTagBtn.addEventListener('click', () => showTagInput());
+        cancelTagBtn.addEventListener('click', hideTagInput);
+        confirmTagBtn.addEventListener('click', addOrUpdateTag);
+
+        // 回车键确认标签
+        tagNameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (tagWeightInput.value) {
+                    addOrUpdateTag();
+                } else {
+                    tagWeightInput.focus();
+                }
+            }
+        });
+
+        tagWeightInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addOrUpdateTag();
+            }
+        });
+
+        // 预设标签点击
+        document.querySelectorAll('.preset-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const name = this.dataset.name;
+                const weight = parseInt(this.dataset.weight);
+                
+                // 检查是否已存在相同标签
+                const existingIndex = formData.tags.findIndex(tag => tag.name === name);
+                if (existingIndex >= 0) {
+                    alert('该标签已添加');
+                    return;
+                }
+                
+                formData.tags.push({ name, weight });
+                renderTags();
+            });
+        });
+
+        // 保存按钮
+        saveBtn.addEventListener('click', function() {
+            if (!validateForm()) return;
+            
+            // 模拟保存
+            console.log('保存食物数据:', formData);
+            alert(`已添加食物：${formData.name}\n标签数量：${formData.tags.length}\n总权重：${formData.tags.reduce((sum, tag) => sum + tag.weight, 0)}`);
+            
+            // 实际应用中这里会发送数据到后端
+            // 保存成功后返回上一页
+            history.back();
+        });
+
+        // 初始化
+        validateForm();
+        renderTags();
+    </script>
+</body>
+</html>
