@@ -33,19 +33,23 @@ pub mod food {
         conn: &Connection,
         id: &str,
     ) -> Result<Option<Food>, Box<dyn std::error::Error>> {
-        let mut stmt = conn.prepare("SELECT id, name, icon, tags, enabled, created_at, updated_at FROM foods WHERE id = ?")?;
-        
-        let food_result = stmt.query_row([id], |row| {
-            Ok(Food {
-                id: row.get(0)?,
-                name: row.get(1)?,
-                icon: row.get(2)?,
-                tags: row.get(3)?,
-                enabled: row.get(4)?,
-                created_at: row.get(5)?,
-                updated_at: row.get(6)?,
+        let mut stmt = conn.prepare(
+            "SELECT id, name, icon, tags, enabled, created_at, updated_at FROM foods WHERE id = ?",
+        )?;
+
+        let food_result = stmt
+            .query_row([id], |row| {
+                Ok(Food {
+                    id: row.get(0)?,
+                    name: row.get(1)?,
+                    icon: row.get(2)?,
+                    tags: row.get(3)?,
+                    enabled: row.get(4)?,
+                    created_at: row.get(5)?,
+                    updated_at: row.get(6)?,
+                })
             })
-        }).optional()?;
+            .optional()?;
 
         Ok(food_result)
     }
@@ -142,24 +146,30 @@ pub mod tag {
         conn: &Connection,
         id: &str,
     ) -> Result<Option<Tag>, Box<dyn std::error::Error>> {
-        let mut stmt = conn.prepare("SELECT id, name, icon, score, created_at, updated_at FROM tags WHERE id = ?")?;
-        
-        let tag_result = stmt.query_row([id], |row| {
-            Ok(Tag {
-                id: row.get(0)?,
-                name: row.get(1)?,
-                icon: row.get(2)?,
-                score: row.get(3)?,
-                created_at: row.get(4)?,
-                updated_at: row.get(5)?,
+        let mut stmt = conn.prepare(
+            "SELECT id, name, icon, score, created_at, updated_at FROM tags WHERE id = ?",
+        )?;
+
+        let tag_result = stmt
+            .query_row([id], |row| {
+                Ok(Tag {
+                    id: row.get(0)?,
+                    name: row.get(1)?,
+                    icon: row.get(2)?,
+                    score: row.get(3)?,
+                    created_at: row.get(4)?,
+                    updated_at: row.get(5)?,
+                })
             })
-        }).optional()?;
+            .optional()?;
 
         Ok(tag_result)
     }
 
     pub fn get_all(conn: &Connection) -> Result<Vec<Tag>, Box<dyn std::error::Error>> {
-        let mut stmt = conn.prepare("SELECT id, name, icon, score, created_at, updated_at FROM tags ORDER BY score DESC")?;
+        let mut stmt = conn.prepare(
+            "SELECT id, name, icon, score, created_at, updated_at FROM tags ORDER BY score DESC",
+        )?;
         let tag_iter = stmt.query_map([], |row| {
             Ok(Tag {
                 id: row.get(0)?,
@@ -200,5 +210,44 @@ pub mod tag {
     pub fn delete(conn: &Connection, id: &str) -> Result<(), Box<dyn std::error::Error>> {
         conn.execute("DELETE FROM tags WHERE id = ?", rusqlite::params![id])?;
         Ok(())
+    }
+
+    pub fn list_by_ids(
+        conn: &Connection,
+        ids: Vec<String>,
+    ) -> Result<Vec<Tag>, Box<dyn std::error::Error>> {
+        if ids.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let placeholders = ids
+            .iter()
+            .enumerate()
+            .map(|(i, _)| format!("?{}", i + 1))
+            .collect::<Vec<_>>()
+            .join(", ");
+
+        let sql = format!(
+            "SELECT id, name, icon, score, created_at, updated_at FROM tags WHERE id IN ({})",
+            placeholders
+        );
+
+        let mut stmt = conn.prepare(&sql)?;
+        let tag_iter = stmt.query_map(rusqlite::params_from_iter(&ids), |row| {
+            Ok(Tag {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                icon: row.get(2)?,
+                score: row.get(3)?,
+                created_at: row.get(4)?,
+                updated_at: row.get(5)?,
+            })
+        })?;
+
+        let mut tags = Vec::new();
+        for tag in tag_iter {
+            tags.push(tag?);
+        }
+        Ok(tags)
     }
 }
