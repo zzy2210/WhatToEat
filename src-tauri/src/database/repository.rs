@@ -15,12 +15,12 @@ pub mod food {
         // 先插入
         conn.execute(
             "INSERT INTO foods (id, name, icon, tags, enabled) VALUES (?, ?, ?, ?, ?)",
-            [
-                &food_id,
-                &food.name,
+            rusqlite::params![
+                food_id,
+                food.name,
                 food.icon.as_deref().unwrap_or(""),
-                &tags_json,
-                &"true",
+                tags_json,
+                true,
             ],
         )?;
 
@@ -89,10 +89,10 @@ pub mod food {
 
         conn.execute(
             "UPDATE foods SET name = ?, icon = ?, tags = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-            [
-                &food.name,
+            rusqlite::params![
+                food.name,
                 food.icon.as_deref().unwrap_or(""),
-                &tags_json,
+                tags_json,
                 id,
             ],
         )?;
@@ -102,14 +102,14 @@ pub mod food {
     }
 
     pub fn delete(conn: &Connection, id: &str) -> Result<(), Box<dyn std::error::Error>> {
-        conn.execute("DELETE FROM foods WHERE id = ?", [id])?;
+        conn.execute("DELETE FROM foods WHERE id = ?", rusqlite::params![id])?;
         Ok(())
     }
 
     pub fn disable(conn: &Connection, id: &str) -> Result<(), Box<dyn std::error::Error>> {
         conn.execute(
             "UPDATE foods SET enabled = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-            [id],
+            rusqlite::params![id],
         )?;
         Ok(())
     }
@@ -126,11 +126,11 @@ pub mod tag {
 
         conn.execute(
             "INSERT INTO tags (id, name, icon, score) VALUES (?, ?, ?, ?)",
-            [
-                &tag_id,
-                &tag.name,
+            rusqlite::params![
+                tag_id,
+                tag.name,
                 tag.icon.as_deref().unwrap_or(""),
-                &tag.score.to_string(),
+                tag.score,
             ],
         )?;
 
@@ -185,10 +185,10 @@ pub mod tag {
     ) -> Result<Tag, Box<dyn std::error::Error>> {
         conn.execute(
             "UPDATE tags SET name = ?, icon = ?, score = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-            [
-                &tag.name,
+            rusqlite::params![
+                tag.name,
                 tag.icon.as_deref().unwrap_or(""),
-                &tag.score.to_string(),
+                tag.score,
                 id,
             ],
         )?;
@@ -198,7 +198,7 @@ pub mod tag {
     }
 
     pub fn delete(conn: &Connection, id: &str) -> Result<(), Box<dyn std::error::Error>> {
-        conn.execute("DELETE FROM tags WHERE id = ?", [id])?;
+        conn.execute("DELETE FROM tags WHERE id = ?", rusqlite::params![id])?;
         Ok(())
     }
 }

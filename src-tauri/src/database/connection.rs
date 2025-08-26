@@ -55,7 +55,7 @@ fn initializes_table(conn: &Connection) -> Result<(), Box<dyn std::error::Error>
 
     // 创建索引
     conn.execute(
-        "CREATE INDEX IF NOT EXISTS idx_foods_enabled ON foods(is_enabled)",
+        "CREATE INDEX IF NOT EXISTS idx_foods_enabled ON foods(enabled)",
         [],
     )?;
     conn.execute(
