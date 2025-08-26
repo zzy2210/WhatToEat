@@ -13,8 +13,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FoodTagCombination {
-    food: Food,
-    tags: Vec<Tag>,
+    pub food: Food,
+    pub tags: Vec<Tag>,
 }
 
 // 通过 食物与它的tag计算的权重中间产物

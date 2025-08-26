@@ -23,14 +23,14 @@ pub struct Tag {
 }
 
 // DTO 主要是为了 tags
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CreateFoodRequest {
     pub name: String,
     pub icon: Option<String>,
     pub tag_uuids: Vec<String>, // 接收数组，内部转换为 JSON
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CreateTagRequest {
     pub name: String,
     pub icon: Option<String>,
