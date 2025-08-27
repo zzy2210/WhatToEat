@@ -36,7 +36,6 @@ const PRESET_TAGS: Omit<FormTag, 'id'>[] = [
 ];
 
 export const AddFoodPage: React.FC<AddFoodPageProps> = ({
-  availableTags,
   editingFood,
   onFoodAdded,
   onBack,
@@ -268,7 +267,7 @@ export const AddFoodPage: React.FC<AddFoodPageProps> = ({
             placeholder="请输入食物或餐厅名称"
             value={formData.name}
             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-            error={!!errors.name}
+            error={errors.name}
             className="form-input"
           />
           {errors.name && <div className="error-message">{errors.name}</div>}
@@ -330,7 +329,7 @@ export const AddFoodPage: React.FC<AddFoodPageProps> = ({
               </div>
               <div className="tag-actions">
                 <Button
-                  variant="success"
+                  variant="primary"
                   size="small"
                   onClick={handleAddOrUpdateTag}
                 >

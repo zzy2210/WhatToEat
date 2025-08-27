@@ -221,7 +221,7 @@ export const TagsPage: React.FC<TagsPageProps> = ({
                                     placeholder="例如：味道不错"
                                     value={formData.name}
                                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                    error={!!errors.name}
+                                    error={errors.name}
                                 />
                                 {errors.name && (
                                     <div className="error-message">{errors.name}</div>
@@ -240,7 +240,7 @@ export const TagsPage: React.FC<TagsPageProps> = ({
                                         ...prev,
                                         score: parseInt(e.target.value) || 0
                                     }))}
-                                    error={!!errors.score}
+                                    error={errors.score}
                                 />
                                 {errors.score && (
                                     <div className="error-message">{errors.score}</div>
@@ -249,7 +249,7 @@ export const TagsPage: React.FC<TagsPageProps> = ({
 
                             <div className="form-actions">
                                 <Button
-                                    variant="success"
+                                    variant="primary"
                                     onClick={handleSave}
                                     disabled={isLoading || !formData.name.trim()}
                                     className="save-btn"

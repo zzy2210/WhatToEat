@@ -1,6 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
 import type {
-  Food,
   Tag,
   CreateFoodRequest,
   CreateTagRequest,

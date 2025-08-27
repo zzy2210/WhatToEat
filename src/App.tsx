@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { RecommendPage } from './components/RecommendPage';
 import { FoodListPage } from './components/FoodListPage';

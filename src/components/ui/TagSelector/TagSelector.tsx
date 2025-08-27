@@ -10,12 +10,7 @@ export interface TagSelectorProps {
 }
 
 // TODO(human)
-export const TagSelector: React.FC<TagSelectorProps> = ({
-  tags,
-  selectedTagIds,
-  onSelectionChange,
-  disabled = false,
-}) => {
+export const TagSelector: React.FC<TagSelectorProps> = () => {
   // TODO(human): Implement the tag selection logic
   // The component should:
   // 1. Display all available tags in a grid layout
@@ -23,7 +18,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
   // 3. Handle click events to toggle tag selection
   // 4. Call onSelectionChange with updated selectedIds array
   // 5. Disable interaction when disabled prop is true
-  
+
   return (
     <div className="tag-selector">
       {/* TODO(human): Implement the tag selection UI */}
