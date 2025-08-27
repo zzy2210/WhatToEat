@@ -1,0 +1,211 @@
+/* 食物清单页面样式 */
+.food-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* 搜索栏 */
+.search-bar {
+  padding: var(--spacing-lg);
+}
+
+.search-input {
+  width: 100%;
+}
+
+/* 食物列表卡片 */
+.food-list-card {
+  padding: var(--spacing-xl);
+  flex: 1;
+}
+
+.food-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.food-list-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.food-count {
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+}
+
+/* 食物列表 */
+.food-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.food-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  background: var(--bg-muted);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-fast);
+}
+
+.food-item:hover {
+  background: var(--bg-disabled);
+  transform: translateX(4px);
+}
+
+.food-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.food-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.food-icon {
+  font-size: var(--font-size-lg);
+}
+
+.food-tags {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+/* 食物操作 */
+.food-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  flex-shrink: 0;
+}
+
+.status-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.status-toggle:hover:not(:disabled) {
+  background: var(--bg-white);
+}
+
+.status-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-indicator.enabled {
+  background: var(--success-color);
+}
+
+.status-indicator.disabled {
+  background: var(--error-color);
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.edit-btn {
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--primary-color);
+}
+
+.delete-btn {
+  background: rgba(225, 112, 85, 0.1);
+  color: var(--error-color);
+}
+
+.action-btn:hover:not(:disabled) {
+  transform: scale(1.1);
+}
+
+/* 空状态 */
+.empty-food-list {
+  text-align: center;
+  padding: var(--spacing-2xl);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+.empty-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty-desc {
+  color: var(--text-secondary);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .food-list-page {
+    padding: var(--spacing-lg) var(--spacing-md);
+    gap: var(--spacing-lg);
+  }
+
+  .food-list-card {
+    padding: var(--spacing-lg);
+  }
+
+  .food-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+
+  .food-actions {
+    align-self: flex-end;
+    gap: var(--spacing-md);
+  }
+
+  .food-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+}

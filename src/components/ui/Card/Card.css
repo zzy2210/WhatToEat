@@ -1,0 +1,66 @@
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all var(--transition-normal) ease;
+}
+
+/* 变体样式 */
+.card--default {
+  /* 默认样式已在基础类中定义 */
+}
+
+.card--elevated {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(0);
+}
+
+.card--elevated:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.card--outlined {
+  border: 2px solid var(--border-color);
+  box-shadow: none;
+}
+
+/* 内边距变体 */
+.card--padding-none {
+  padding: 0;
+}
+
+.card--padding-small {
+  padding: var(--spacing-lg);
+}
+
+.card--padding-medium {
+  padding: var(--spacing-xl);
+}
+
+.card--padding-large {
+  padding: var(--spacing-2xl);
+}
+
+/* 悬停效果 */
+.card--hover {
+  cursor: pointer;
+}
+
+.card--hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .card--padding-large {
+    padding: var(--spacing-xl);
+  }
+  
+  .card--padding-medium {
+    padding: var(--spacing-lg);
+  }
+}

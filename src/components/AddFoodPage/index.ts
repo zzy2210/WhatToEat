@@ -1,0 +1,1 @@
+export { AddFoodPage } from './AddFoodPage';
