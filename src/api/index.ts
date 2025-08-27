@@ -79,6 +79,13 @@ export const foodApi = {
   async disableFood(id: string): Promise<void> {
     return apiCall<void>('disable_food', { id });
   },
+
+  /**
+   * 启用食物
+   */
+  async enableFood(id: string): Promise<void> {
+    return apiCall<void>('enable_food', { id });
+  },
 };
 
 // 标签管理 API

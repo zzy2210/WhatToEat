@@ -18,6 +18,7 @@ pub fn run() {
             commands::food::update_food,
             commands::food::delete_food,
             commands::food::disable_food,
+            commands::food::enable_food,
             // Tags CRUD
             commands::tags::create_tag,
             commands::tags::get_tag_by_id,

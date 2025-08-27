@@ -117,6 +117,14 @@ pub mod food {
         )?;
         Ok(())
     }
+
+    pub fn enable(conn: &Connection, id: &str) -> Result<(), Box<dyn std::error::Error>> {
+        conn.execute(
+            "UPDATE foods SET enabled = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            rusqlite::params![id],
+        )?;
+        Ok(())
+    }
 }
 
 pub mod tag {

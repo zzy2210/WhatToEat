@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card } from '../ui/Card';
 import './AboutPage.css';
 
 export const AboutPage: React.FC = () => {
-  const [logoClicks, setLogoClicks] = useState(0);
-
   // Logo点击彩蛋
   const handleLogoClick = () => {
-    setLogoClicks(prev => prev + 1);
     const emojis = ['🍽️', '🍜', '🍕', '🍔', '🍱', '🥘', '🍲', '🥗'];
     const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-    
+
     // 临时改变logo显示
     const logoElement = document.querySelector('.app-logo');
     if (logoElement) {
@@ -81,7 +78,7 @@ export const AboutPage: React.FC = () => {
             Y
           </div>
           <div className="author-info">
-            <div className="author-name">y1nhui (zzy2210)</div>
+            <div className="author-name">阴晦 (zzy2210)</div>
             <div className="author-role">全栈开发者 & 产品设计师</div>
             <div className="author-desc">
               热爱技术创新，专注于用户体验设计。相信好的软件应该既强大又简单。
@@ -91,9 +88,15 @@ export const AboutPage: React.FC = () => {
 
         <div className="contact-section">
           <div className="section-subtitle">📫 联系方式</div>
+          <div className="contact-info">
+            <div className="contact-email">
+              <span className="contact-label">邮箱：</span>
+              <span className="contact-value">y1nhui@foxmail.com</span>
+            </div>
+          </div>
           <div className="contact-links">
-            <a 
-              href="https://github.com/zzy2210" 
+            <a
+              href="https://github.com/zzy2210"
               className="contact-link"
               target="_blank"
               rel="noopener noreferrer"
@@ -101,15 +104,15 @@ export const AboutPage: React.FC = () => {
               <span className="contact-icon">🐙</span>
               <span>GitHub</span>
             </a>
-            <a 
-              href="mailto:your-email@example.com" 
+            <a
+              href="mailto:y1nhui@foxmail.com"
               className="contact-link"
             >
               <span className="contact-icon">📧</span>
               <span>Email</span>
             </a>
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="contact-link"
               onClick={(e) => {
                 e.preventDefault();
@@ -119,47 +122,6 @@ export const AboutPage: React.FC = () => {
               <span className="contact-icon">💬</span>
               <span>反馈建议</span>
             </a>
-          </div>
-        </div>
-      </Card>
-
-      {/* 致谢 */}
-      <Card className="thanks-card fade-in-delay-2">
-        <div className="card-title">🙏 致谢</div>
-        <div className="thanks-content">
-          <div className="license-badge">MIT License</div>
-          <p>
-            感谢所有开源项目的贡献者，特别是 Tauri、React 和 Rust 社区的支持。<br />
-            本项目采用 MIT 开源许可证，欢迎自由使用和贡献代码。
-          </p>
-          
-          {/* 技术栈展示 */}
-          <div className="tech-stack">
-            <div className="tech-section">
-              <div className="tech-title">前端技术</div>
-              <div className="tech-items">
-                <span className="tech-item">React 18</span>
-                <span className="tech-item">TypeScript</span>
-                <span className="tech-item">Vite</span>
-              </div>
-            </div>
-            <div className="tech-section">
-              <div className="tech-title">后端技术</div>
-              <div className="tech-items">
-                <span className="tech-item">Rust</span>
-                <span className="tech-item">Tauri</span>
-                <span className="tech-item">SQLite</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="copyright">
-            Made with ❤️ by zzy2210 | Copyright © 2025 WhatToEat
-            {logoClicks >= 10 && (
-              <div className="easter-egg">
-                🎉 您发现了隐藏彩蛋！感谢您对WhatToEat的喜爱！
-              </div>
-            )}
           </div>
         </div>
       </Card>

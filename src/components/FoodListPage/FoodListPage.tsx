@@ -24,7 +24,7 @@ export const FoodListPage: React.FC<FoodListPageProps> = ({
   // 过滤后的食物列表
   const filteredFoods = useMemo(() => {
     if (!searchQuery.trim()) return foods;
-    
+
     const query = searchQuery.toLowerCase().trim();
     return foods.filter(foodItem =>
       foodItem.food.name.toLowerCase().includes(query) ||
@@ -39,15 +39,7 @@ export const FoodListPage: React.FC<FoodListPageProps> = ({
       if (currentEnabled) {
         await api.food.disableFood(foodId);
       } else {
-        // 重新启用食物需要调用更新接口
-        const foodItem = foods.find(f => f.food.id === foodId);
-        if (foodItem) {
-          await api.food.updateFood(foodId, {
-            name: foodItem.food.name,
-            icon: foodItem.food.icon,
-            tag_uuids: foodItem.tags.map(tag => tag.id),
-          });
-        }
+        await api.food.enableFood(foodId);
       }
       onFoodUpdate?.();
     } catch (error) {
@@ -100,7 +92,7 @@ export const FoodListPage: React.FC<FoodListPageProps> = ({
           <div className="food-list-title">🏷️ 我的美食清单</div>
           <div className="food-count">
             共 {filteredFoods.length} 项
-            {searchQuery && foods.length !== filteredFoods.length && 
+            {searchQuery && foods.length !== filteredFoods.length &&
               ` / ${foods.length} 总计`
             }
           </div>

@@ -186,6 +186,35 @@
   border-top: 1px solid var(--border-light);
 }
 
+.contact-info {
+  margin-bottom: var(--spacing-lg);
+}
+
+.contact-email {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--bg-muted);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.contact-label {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.contact-value {
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-weight: var(--font-weight-medium);
+  background: var(--bg-white);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-light);
+}
+
 .contact-links {
   display: flex;
   gap: var(--spacing-md);
@@ -300,12 +329,19 @@
 
 /* 动画 */
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
+
   40% {
     transform: translateY(-10px);
   }
+
   60% {
     transform: translateY(-5px);
   }
